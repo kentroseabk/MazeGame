@@ -22,7 +22,7 @@ public:
 	void Draw();
 	PlacableActor* UpdateActors(int x, int y);
 
-	PlacableActor* CheckForCollission(int x, int y, ActorType ignoreActors[], int ignoreActorsLength);
+	PlacableActor* CheckForCollision(int x, int y, const ActorType ignoreActors[], int ignoreActorsLength);
 
 	bool IsSpace(int x, int y);
 	bool IsWall(int x, int y);

@@ -237,7 +237,14 @@ PlacableActor* Level::UpdateActors(int x, int y)
 	return collidedActor;
 }
 
-PlacableActor* Level::CheckForCollission(int x, int y, ActorType ignoreActors[], int ignoreActorsLength)
+/*
+	Checks for collision between a given coordinate and the list of actors in the level.
+	Will ignore type ActorTypes specified in ignoreActors.
+	This was done so traps don't collide with themselves.
+
+	This can be refactored with the method above if there is time.
+*/
+PlacableActor* Level::CheckForCollision(int x, int y, const ActorType ignoreActors[], int ignoreActorsLength)
 {
 	PlacableActor* collidedActor = nullptr;
 

@@ -76,3 +76,8 @@ void Player::Draw()
 {
 	cout << "@";
 }
+
+void Player::Reset()
+{
+	m_pTrap = nullptr;
+}

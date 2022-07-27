@@ -29,6 +29,9 @@ public:
 
 	virtual ActorType GetType() override { return ActorType::Player; }
 	virtual void Draw() override;
+
+	void Reset();
+
 private:
 	Key* m_pCurrentKey;
 	Trap* m_pTrap;

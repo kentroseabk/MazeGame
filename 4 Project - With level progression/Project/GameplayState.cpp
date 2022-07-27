@@ -50,6 +50,8 @@ bool GameplayState::Load()
 		m_pLevel = nullptr;
 	}
 
+	m_player.Reset();
+
 	m_pLevel = new Level();
 	
 	return m_pLevel->Load(m_LevelNames.at(m_currentLevel), m_player.GetXPositionPointer(), m_player.GetYPositionPointer());
@@ -125,7 +127,7 @@ bool GameplayState::Update(bool processInput)
 			
 			if (trap)
 			{
-				HandleCollissionForTrap(trap->GetXPosition(), trap->GetYPosition());
+				HandleCollisionForTrap(trap->GetXPosition(), trap->GetYPosition());
 			}
 		}
 	}
@@ -265,12 +267,16 @@ void GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
 	}
 }
 
-void GameplayState::HandleCollissionForTrap(int x, int y)
-{
-	constexpr int ignoreActorsLength = 2;
-	ActorType ignoreActors[ignoreActorsLength]{ ActorType::Player, ActorType::Trap };
+/*
+	Handles collision between player traps and enemies.
 
-	PlacableActor* collidedActor = m_pLevel->CheckForCollission(x, y, ignoreActors, ignoreActorsLength);
+	The game is set up to only handle collisions for the player character so adding more logic
+	to handle other collissions was a little tricky. If there is more time at the end of the week
+	or after feedback is given I will update/refactor some of the logic.
+*/
+void GameplayState::HandleCollisionForTrap(int x, int y)
+{
+	PlacableActor* collidedActor = m_pLevel->CheckForCollision(x, y, m_ignoreActors, m_ignoreActorsLength);
 
 	if (collidedActor != nullptr && collidedActor->IsActive())
 	{
