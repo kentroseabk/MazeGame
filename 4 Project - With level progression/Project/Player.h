@@ -19,6 +19,7 @@ public:
 	bool HasTrap();
 	void DropTrap();
 	void PickUpTrap(Trap* trap);
+	Trap* GetTrap() { return m_pTrap; }
 
 	void AddMoney(int money) { m_money += money; }
 	int GetMoney() { return m_money; }
