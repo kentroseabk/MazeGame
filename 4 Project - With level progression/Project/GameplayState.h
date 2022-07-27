@@ -34,6 +34,7 @@ public:
 
 private:
 	void HandleCollision(int newPlayerX, int newPlayerY);
+	void HandleCollissionForTrap(int trapX, int trapY);
 	bool Load();
 	void DrawHUD(const HANDLE& console);
 };

@@ -70,6 +70,22 @@ public:
 		Beep(1568, 50);
 	}
 
+	void PlayTrapPickupSound()
+	{
+		if (!m_SoundOn)
+			return;
+		Beep(1000, 50);
+		Beep(1600, 200);
+	}
+
+	void PlayTrapDropSound()
+	{
+		if (!m_SoundOn)
+			return;
+		Beep(1200, 200);
+		Beep(1500, 50);
+	}
+
 	void PlayMoneySound()
 	{
 		if (!m_SoundOn)
@@ -82,6 +98,13 @@ public:
 		if (!m_SoundOn)
 			return;
 		Beep(200, 100);
+	}
+
+	void PlayEnemyDieSound()
+	{
+		if (!m_SoundOn)
+			return;
+		Beep(400, 100);
 	}
 
 	void PlayLoseSound()

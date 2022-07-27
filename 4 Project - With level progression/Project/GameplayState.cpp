@@ -7,6 +7,7 @@
 
 #include "Enemy.h"
 #include "Key.h"
+#include "Trap.h"
 #include "Door.h"
 #include "Money.h"
 #include "Goal.h"
@@ -103,6 +104,10 @@ bool GameplayState::Update(bool processInput)
 		{
 			m_player.DropKey();
 		}
+		else if ((char)input == 'T' || (char)input == 't')
+		{
+			m_player.DropTrap();
+		}
 
 		// If position never changed
 		if (newPlayerX == m_player.GetXPosition() && newPlayerY == m_player.GetYPosition())
@@ -112,6 +117,16 @@ bool GameplayState::Update(bool processInput)
 		else
 		{
 			HandleCollision(newPlayerX, newPlayerY);
+		}
+
+		if (!m_player.HasTrap())
+		{
+			Trap* trap = m_pLevel->GetTrap();
+			
+			if (trap)
+			{
+				HandleCollissionForTrap(trap->GetXPosition(), trap->GetYPosition());
+			}
 		}
 	}
 	if (m_beatLevel)
@@ -189,6 +204,19 @@ void GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
 			}
 			break;
 		}
+		case ActorType::Trap:
+		{
+			Trap* collidedTrap = dynamic_cast<Trap*>(collidedActor);
+			assert(collidedTrap);
+			if (!m_player.HasTrap())
+			{
+				m_player.PickUpTrap(collidedTrap);
+				collidedTrap->Remove();
+				m_player.SetPosition(newPlayerX, newPlayerY);
+				AudioManager::GetInstance()->PlayTrapPickupSound();
+			}
+			break;
+		}
 		case ActorType::Door:
 		{
 			Door* collidedDoor = dynamic_cast<Door*>(collidedActor);
@@ -234,6 +262,32 @@ void GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
 	else if (m_pLevel->IsWall(newPlayerX, newPlayerY))
 	{
 		// wall collision, do nothing
+	}
+}
+
+void GameplayState::HandleCollissionForTrap(int x, int y)
+{
+	constexpr int ignoreActorsLength = 2;
+	ActorType ignoreActors[ignoreActorsLength]{ ActorType::Player, ActorType::Trap };
+
+	PlacableActor* collidedActor = m_pLevel->CheckForCollission(x, y, ignoreActors, ignoreActorsLength);
+
+	if (collidedActor != nullptr && collidedActor->IsActive())
+	{
+		switch (collidedActor->GetType())
+		{
+		case ActorType::Enemy:
+		{
+			Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
+			assert(collidedEnemy);
+			AudioManager::GetInstance()->PlayEnemyDieSound();
+			collidedEnemy->Remove();
+
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }
 

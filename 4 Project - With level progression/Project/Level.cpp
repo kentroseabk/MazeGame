@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Key.h"
+#include "Trap.h"
 #include "Door.h"
 #include "Goal.h"
 #include "Money.h"
@@ -139,6 +140,10 @@ bool Level::ConvertLevel(int* playerX, int* playerY)
 				m_pLevelData[index] = ' ';
 				m_pActors.push_back(new Key(x, y, ActorColor::Blue));
 				break;
+			case '#':
+				m_pLevelData[index] = ' ';
+				m_pActors.push_back(new Trap(x, y, ActorColor::Yellow));
+				break;
 			case 'R':
 				m_pLevelData[index] = ' ';
 				m_pActors.push_back(new Door(x, y, ActorColor::Red, ActorColor::SolidRed));
@@ -194,6 +199,21 @@ bool Level::ConvertLevel(int* playerX, int* playerY)
 	return anyWarnings;
 }
 
+Trap* Level::GetTrap()
+{
+	for (auto actor = m_pActors.begin(); actor != m_pActors.end(); ++actor)
+	{
+		if ((*actor)->GetType() == ActorType::Trap)
+		{
+			Trap* trap = dynamic_cast<Trap*>(*actor);
+			assert(trap);
+			return trap;
+		}
+	}
+
+	return nullptr;
+}
+
 int Level::GetIndexFromCoordinates(int x, int y)
 {
 	return x + y * m_width;
@@ -208,11 +228,39 @@ PlacableActor* Level::UpdateActors(int x, int y)
 	{
 		(*actor)->Update(); // Update all actors
 
+		if (x == (*actor)->GetXPosition() && y == (*actor)->GetYPosition() && (*actor)->IsActive())
+		{
+			collidedActor = (*actor);
+		}
+	}
+
+	return collidedActor;
+}
+
+PlacableActor* Level::CheckForCollission(int x, int y, ActorType ignoreActors[], int ignoreActorsLength)
+{
+	PlacableActor* collidedActor = nullptr;
+
+	for (auto actor = m_pActors.begin(); actor != m_pActors.end(); ++actor)
+	{
 		if (x == (*actor)->GetXPosition() && y == (*actor)->GetYPosition())
 		{
-			// should only be able to collide with one actor
-			assert(collidedActor == nullptr);
-			collidedActor = (*actor);
+			bool matchesIgnoreActor = false;
+
+			// traps should not collide with player or self
+			for (int i = 0; i < ignoreActorsLength; i++)
+			{
+				if ((*actor)->GetType() == ignoreActors[i])
+				{
+					matchesIgnoreActor = true;
+					break;
+				}
+			}
+
+			if (!matchesIgnoreActor)
+			{
+				collidedActor = (*actor);
+			}
 		}
 	}
 

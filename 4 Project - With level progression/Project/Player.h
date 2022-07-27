@@ -2,6 +2,7 @@
 #include "PlacableActor.h"
 
 class Key;
+class Trap;
 
 class Player : public PlacableActor
 {
@@ -15,6 +16,10 @@ public:
 	void DropKey();
 	Key* GetKey() { return m_pCurrentKey; }
 
+	bool HasTrap();
+	void DropTrap();
+	void PickUpTrap(Trap* trap);
+
 	void AddMoney(int money) { m_money += money; }
 	int GetMoney() { return m_money; }
 
@@ -25,6 +30,7 @@ public:
 	virtual void Draw() override;
 private:
 	Key* m_pCurrentKey;
+	Trap* m_pTrap;
 	int m_money;
 	int m_lives;
 };
