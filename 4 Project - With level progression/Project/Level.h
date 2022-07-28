@@ -20,9 +20,8 @@ public:
 
 	bool Load(std::string levelName, int* playerX, int* playerY);
 	void Draw();
-	PlacableActor* UpdateActors(int x, int y);
-
-	PlacableActor* CheckForCollision(int x, int y, const ActorType ignoreActors[], int ignoreActorsLength);
+	void UpdateActors(int x, int y);
+	std::vector<PlacableActor*> CheckForCollisions(int x, int y);
 
 	bool IsSpace(int x, int y);
 	bool IsWall(int x, int y);
@@ -37,5 +36,6 @@ public:
 private:
 	bool ConvertLevel(int* playerX, int* playerY);
 	int GetIndexFromCoordinates(int x, int y);
+	bool IsValidCollision(int x, int y, PlacableActor* actor);
 
 };

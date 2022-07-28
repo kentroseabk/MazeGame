@@ -118,17 +118,17 @@ bool GameplayState::Update(bool processInput)
 		}
 		else
 		{
-			HandleCollision(newPlayerX, newPlayerY);
+			HandleCollisionForPlayer(newPlayerX, newPlayerY);
 		}
 
+		// if the player is NOT holding the trap, see if it collided with an enemy
 		if (!m_player.HasTrap())
 		{
+			// get trap currently in level
 			Trap* trap = m_pLevel->GetTrap();
 			
-			if (trap)
-			{
-				HandleCollisionForTrap(trap->GetXPosition(), trap->GetYPosition());
-			}
+			// if trap was found in the level
+			if (trap) HandleCollisionForTrap(trap->GetXPosition(), trap->GetYPosition());
 		}
 	}
 	if (m_beatLevel)
@@ -159,109 +159,121 @@ bool GameplayState::Update(bool processInput)
 	return false;
 }
 
-void GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
+/*
+	Updates all actors in the level and checks for collisions between the player and them.
+*/
+void GameplayState::HandleCollisionForPlayer(int x, int y)
 {
-	PlacableActor* collidedActor = m_pLevel->UpdateActors(newPlayerX, newPlayerY);
-	if (collidedActor != nullptr && collidedActor->IsActive())
-	{
-		switch (collidedActor->GetType())
-		{
-		case ActorType::Enemy:
-		{
-			Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
-			assert(collidedEnemy);
-			AudioManager::GetInstance()->PlayLoseLivesSound();
-			collidedEnemy->Remove();
-			m_player.SetPosition(newPlayerX, newPlayerY);
+	m_pLevel->UpdateActors(x, y);
 
-			m_player.DecrementLives();
-			if (m_player.GetLives() < 0)
-			{
-				//TODO: Go to game over screen
-				AudioManager::GetInstance()->PlayLoseSound();
-				m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Lose);
-			}
-			break;
-		}
-		case ActorType::Money:
-		{
-			Money* collidedMoney = dynamic_cast<Money*>(collidedActor);
-			assert(collidedMoney);
-			AudioManager::GetInstance()->PlayMoneySound();
-			collidedMoney->Remove();
-			m_player.AddMoney(collidedMoney->GetWorth());
-			m_player.SetPosition(newPlayerX, newPlayerY);
-			break;
-		}
-		case ActorType::Key:
-		{
-			Key* collidedKey = dynamic_cast<Key*>(collidedActor);
-			assert(collidedKey);
-			if (!m_player.HasKey())
-			{
-				m_player.PickupKey(collidedKey);
-				collidedKey->Remove();
-				m_player.SetPosition(newPlayerX, newPlayerY);
-				AudioManager::GetInstance()->PlayKeyPickupSound();
-			}
-			break;
-		}
-		case ActorType::Trap:
-		{
-			Trap* collidedTrap = dynamic_cast<Trap*>(collidedActor);
-			assert(collidedTrap);
-			if (!m_player.HasTrap())
-			{
-				m_player.PickUpTrap(collidedTrap);
-				collidedTrap->Remove();
-				m_player.SetPosition(newPlayerX, newPlayerY);
-				AudioManager::GetInstance()->PlayTrapPickupSound();
-			}
-			break;
-		}
-		case ActorType::Door:
-		{
-			Door* collidedDoor = dynamic_cast<Door*>(collidedActor);
-			assert(collidedDoor);
-			if (!collidedDoor->IsOpen())
-			{
-				if (m_player.HasKey(collidedDoor->GetColor()))
-				{
-					collidedDoor->Open();
-					collidedDoor->Remove();
-					m_player.UseKey();
-					m_player.SetPosition(newPlayerX, newPlayerY);
-					AudioManager::GetInstance()->PlayDoorOpenSound();
-				}
-				else
-				{
-					AudioManager::GetInstance()->PlayDoorClosedSound();
-				}
-			}
-			else
-			{
-				m_player.SetPosition(newPlayerX, newPlayerY);
-			}
-			break;
-		}
-		case ActorType::Goal:
-		{
-			Goal* collidedGoal = dynamic_cast<Goal*>(collidedActor);
-			assert(collidedGoal);
-			collidedGoal->Remove();
-			m_player.SetPosition(newPlayerX, newPlayerY);
-			m_beatLevel = true;
-			break;
-		}
-		default:
-			break;
-		}
-	}
-	else if (m_pLevel->IsSpace(newPlayerX, newPlayerY)) // no collision
+	vector<PlacableActor*> collidedActors = m_pLevel->CheckForCollisions(x, y);
+
+	if (collidedActors.size() > 0)
 	{
-		m_player.SetPosition(newPlayerX, newPlayerY);
+		for (auto& collidedActor : collidedActors)
+		{
+			if (collidedActor != nullptr && collidedActor->IsActive())
+			{
+				switch (collidedActor->GetType())
+				{
+				case ActorType::Enemy:
+				{
+					Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
+					assert(collidedEnemy);
+					AudioManager::GetInstance()->PlayLoseLivesSound();
+					collidedEnemy->Remove();
+					m_player.SetPosition(x, y);
+
+					m_player.DecrementLives();
+					if (m_player.GetLives() < 0)
+					{
+						//TODO: Go to game over screen
+						AudioManager::GetInstance()->PlayLoseSound();
+						m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Lose);
+					}
+					break;
+				}
+				case ActorType::Money:
+				{
+					Money* collidedMoney = dynamic_cast<Money*>(collidedActor);
+					assert(collidedMoney);
+					AudioManager::GetInstance()->PlayMoneySound();
+					collidedMoney->Remove();
+					m_player.AddMoney(collidedMoney->GetWorth());
+					m_player.SetPosition(x, y);
+					break;
+				}
+				case ActorType::Key:
+				{
+					Key* collidedKey = dynamic_cast<Key*>(collidedActor);
+					assert(collidedKey);
+					if (!m_player.HasKey())
+					{
+						m_player.PickupKey(collidedKey);
+						collidedKey->Remove();
+						m_player.SetPosition(x, y);
+						AudioManager::GetInstance()->PlayKeyPickupSound();
+					}
+					break;
+				}
+				case ActorType::Trap:
+				{
+					Trap* collidedTrap = dynamic_cast<Trap*>(collidedActor);
+					assert(collidedTrap);
+					if (!m_player.HasTrap())
+					{
+						m_player.PickUpTrap(collidedTrap);
+						collidedTrap->Remove();
+						m_player.SetPosition(x, y);
+						AudioManager::GetInstance()->PlayTrapPickupSound();
+					}
+					break;
+				}
+				case ActorType::Door:
+				{
+					Door* collidedDoor = dynamic_cast<Door*>(collidedActor);
+					assert(collidedDoor);
+					if (!collidedDoor->IsOpen())
+					{
+						if (m_player.HasKey(collidedDoor->GetColor()))
+						{
+							collidedDoor->Open();
+							collidedDoor->Remove();
+							m_player.UseKey();
+							m_player.SetPosition(x, y);
+							AudioManager::GetInstance()->PlayDoorOpenSound();
+						}
+						else
+						{
+							AudioManager::GetInstance()->PlayDoorClosedSound();
+						}
+					}
+					else
+					{
+						m_player.SetPosition(x, y);
+					}
+					break;
+				}
+				case ActorType::Goal:
+				{
+					Goal* collidedGoal = dynamic_cast<Goal*>(collidedActor);
+					assert(collidedGoal);
+					collidedGoal->Remove();
+					m_player.SetPosition(x, y);
+					m_beatLevel = true;
+					break;
+				}
+				default:
+					break;
+				}
+			}
+		}
 	}
-	else if (m_pLevel->IsWall(newPlayerX, newPlayerY))
+	else if (m_pLevel->IsSpace(x, y)) // no collision
+	{
+		m_player.SetPosition(x, y);
+	}
+	else if (m_pLevel->IsWall(x, y))
 	{
 		// wall collision, do nothing
 	}
@@ -269,32 +281,31 @@ void GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
 
 /*
 	Handles collision between player traps and enemies.
-
-	The game is set up to only handle collisions for the player character so adding more logic
-	to handle other collissions was a little tricky. If there is more time at the end of the week
-	or after feedback is given I will update/refactor some of the logic.
 */
 void GameplayState::HandleCollisionForTrap(int x, int y)
 {
-	PlacableActor* collidedActor = m_pLevel->CheckForCollision(x, y, m_ignoreActors, m_ignoreActorsLength);
+	vector<PlacableActor*> collidedActors = m_pLevel->CheckForCollisions(x, y);
 
-	if (collidedActor != nullptr && collidedActor->IsActive())
+	for (auto& collidedActor : collidedActors)
 	{
-		switch (collidedActor->GetType())
+		if (collidedActor != nullptr && collidedActor->IsActive())
 		{
-		case ActorType::Enemy:
-		{
-			Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
-			assert(collidedEnemy);
-			AudioManager::GetInstance()->PlayEnemyDieSound();
-			collidedEnemy->Remove();
+			switch (collidedActor->GetType())
+			{
+			case ActorType::Enemy:
+			{
+				Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
+				assert(collidedEnemy);
+				AudioManager::GetInstance()->PlayEnemyDieSound();
+				collidedEnemy->Remove();
 
-			break;
+				break;
+			}
+			default:
+				break;
+			}
 		}
-		default:
-			break;
-		}
-	}
+	}	
 }
 
 void GameplayState::Draw()

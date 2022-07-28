@@ -24,9 +24,6 @@ class GameplayState : public GameState
 
 	std::vector<std::string> m_LevelNames;
 
-	static constexpr int m_ignoreActorsLength = 2;
-	static constexpr ActorType m_ignoreActors[m_ignoreActorsLength]{ ActorType::Player, ActorType::Trap };
-
 public:
 	GameplayState(StateMachineExampleGame* pOwner);
 	~GameplayState();
@@ -36,7 +33,7 @@ public:
 	virtual void Draw() override;
 
 private:
-	void HandleCollision(int newPlayerX, int newPlayerY);
+	void HandleCollisionForPlayer(int newPlayerX, int newPlayerY);
 	void HandleCollisionForTrap(int trapX, int trapY);
 	bool Load();
 	void DrawHUD(const HANDLE& console);

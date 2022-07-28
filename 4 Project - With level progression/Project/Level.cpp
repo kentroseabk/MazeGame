@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "Level.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -219,57 +220,36 @@ int Level::GetIndexFromCoordinates(int x, int y)
 	return x + y * m_width;
 }
 
-// Updates all actors and returns a colliding actor if there is one
-PlacableActor* Level::UpdateActors(int x, int y)
+/*
+	Update all actors in the level.
+*/
+void Level::UpdateActors(int x, int y)
 {
-	PlacableActor* collidedActor = nullptr;
-
 	for (auto actor = m_pActors.begin(); actor != m_pActors.end(); ++actor)
 	{
 		(*actor)->Update(); // Update all actors
-
-		if (x == (*actor)->GetXPosition() && y == (*actor)->GetYPosition() && (*actor)->IsActive())
-		{
-			collidedActor = (*actor);
-		}
 	}
-
-	return collidedActor;
 }
 
-/*
-	Checks for collision between a given coordinate and the list of actors in the level.
-	Will ignore type ActorTypes specified in ignoreActors.
-	This was done so traps don't collide with themselves.
-
-	This can be refactored with the method above if there is time.
-*/
-PlacableActor* Level::CheckForCollision(int x, int y, const ActorType ignoreActors[], int ignoreActorsLength)
+// returns colliding actors if there are any
+std::vector<PlacableActor*> Level::CheckForCollisions(int x, int y)
 {
-	PlacableActor* collidedActor = nullptr;
+	vector<PlacableActor*> collidedActors;
 
 	for (auto actor = m_pActors.begin(); actor != m_pActors.end(); ++actor)
 	{
-		if (x == (*actor)->GetXPosition() && y == (*actor)->GetYPosition())
+		if (IsValidCollision(x, y, *actor))
 		{
-			bool matchesIgnoreActor = false;
-
-			// traps should not collide with player or self
-			for (int i = 0; i < ignoreActorsLength; i++)
-			{
-				if ((*actor)->GetType() == ignoreActors[i])
-				{
-					matchesIgnoreActor = true;
-					break;
-				}
-			}
-
-			if (!matchesIgnoreActor)
-			{
-				collidedActor = (*actor);
-			}
+			collidedActors.push_back(*actor);
 		}
 	}
 
-	return collidedActor;
+	return collidedActors;
+}
+
+bool Level::IsValidCollision(int x, int y, PlacableActor* actor)
+{
+	return	x == actor->GetXPosition() &&
+			y == actor->GetYPosition() &&
+			actor->IsActive();
 }
