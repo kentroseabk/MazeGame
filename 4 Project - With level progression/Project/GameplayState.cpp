@@ -376,14 +376,13 @@ void GameplayState::DrawHUD(const HANDLE& console)
 	{
 		cout << Level::WAL;
 	}
+
 	cout << endl;
 	
 	// Left Side border
 	cout << Level::WAL;
 
-	cout << " t-drop trap " << Level::WAL;
-
-	cout << " trap:";
+	cout << " t-drop trap " << Level::WAL << " trap:";
 
 	if (m_player.HasTrap())
 	{
@@ -396,15 +395,14 @@ void GameplayState::DrawHUD(const HANDLE& console)
 	
 	cout << " ";
 
-	const int remainingSpots = 26;
+	const int widthRemaining = 26;
 
-	for (int i = 0; i < remainingSpots; i++)
+	for (int i = 0; i < widthRemaining; i++)
 	{
 		cout << Level::WAL;
 	}
 
-	cout << Level::WAL;
-	cout << endl;
+	cout << Level::WAL << endl;
 
 	// Bottom Border
 	for (int i = 0; i < m_pLevel->GetWidth(); ++i)
