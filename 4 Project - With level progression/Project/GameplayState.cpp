@@ -26,7 +26,7 @@ constexpr int kEscapeKey = 27;
 
 GameplayState::GameplayState(StateMachineExampleGame* pOwner)
 	: m_pOwner(pOwner)
-	, m_beatLevel(false)
+	, m_didBeatLevel(false)
 	, m_skipFrameCount(0)
 	, m_currentLevel(0)
 	, m_pLevel(nullptr)
@@ -63,80 +63,82 @@ void GameplayState::Enter()
 	Load();
 }
 
-bool GameplayState::Update(bool processInput)
+void GameplayState::ProcessInput()
 {
-	if (processInput && !m_beatLevel)
+	int input = _getch();
+	int arrowInput = 0;
+	int newPlayerX = m_player.GetXPosition();
+	int newPlayerY = m_player.GetYPosition();
+
+	// One of the arrow keys were pressed
+	if (input == kArrowInput)
 	{
-		int input = _getch();
-		int arrowInput = 0;
-		int newPlayerX = m_player.GetXPosition();
-		int newPlayerY = m_player.GetYPosition();
-
-		// One of the arrow keys were pressed
-		if (input == kArrowInput)
-		{
-			arrowInput = _getch();
-		}
-
-		if ((input == kArrowInput && arrowInput == kLeftArrow) ||
-			(char)input == 'A' || (char)input == 'a')
-		{
-			newPlayerX--;
-		}
-		else if ((input == kArrowInput && arrowInput == kRightArrow) ||
-			(char)input == 'D' || (char)input == 'd')
-		{
-			newPlayerX++;
-		}
-		else if ((input == kArrowInput && arrowInput == kUpArrow) ||
-			(char)input == 'W' || (char)input == 'w')
-		{
-			newPlayerY--;
-		}
-		else if ((input == kArrowInput && arrowInput == kDownArrow) ||
-			(char)input == 'S' || (char)input == 's')
-		{
-			newPlayerY++;
-		}
-		else if (input == kEscapeKey)
-		{
-			m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
-		}
-		else if ((char)input == 'Z' || (char)input == 'z')
-		{
-			m_player.DropKey();
-		}
-		else if ((char)input == 'T' || (char)input == 't')
-		{
-			m_player.DropTrap();
-		}
-
-		// If position never changed
-		if (newPlayerX == m_player.GetXPosition() && newPlayerY == m_player.GetYPosition())
-		{
-			//return false;
-		}
-		else
-		{
-			HandleCollisionForPlayer(newPlayerX, newPlayerY);
-		}
-
-		// if the player is NOT holding the trap, see if it collided with an enemy
-		if (!m_player.HasTrap())
-		{
-			// get trap currently in level
-			Trap* trap = m_pLevel->GetTrap();
-			
-			// if trap was found in the level
-			if (trap) HandleCollisionForTrap(trap->GetXPosition(), trap->GetYPosition());
-		}
+		arrowInput = _getch();
 	}
-	if (m_beatLevel)
+
+	if ((input == kArrowInput && arrowInput == kLeftArrow) ||
+		(char)input == 'A' || (char)input == 'a')
+	{
+		newPlayerX--;
+	}
+	else if ((input == kArrowInput && arrowInput == kRightArrow) ||
+		(char)input == 'D' || (char)input == 'd')
+	{
+		newPlayerX++;
+	}
+	else if ((input == kArrowInput && arrowInput == kUpArrow) ||
+		(char)input == 'W' || (char)input == 'w')
+	{
+		newPlayerY--;
+	}
+	else if ((input == kArrowInput && arrowInput == kDownArrow) ||
+		(char)input == 'S' || (char)input == 's')
+	{
+		newPlayerY++;
+	}
+	else if (input == kEscapeKey)
+	{
+		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
+	}
+	else if ((char)input == 'Z' || (char)input == 'z')
+	{
+		m_player.DropKey();
+	}
+	else if ((char)input == 'T' || (char)input == 't')
+	{
+		m_player.DropTrap();
+	}
+
+	// If position never changed
+	if (newPlayerX == m_player.GetXPosition() && newPlayerY == m_player.GetYPosition())
+	{
+		//return false;
+	}
+	else
+	{
+		HandleCollisionForPlayer(newPlayerX, newPlayerY);
+	}
+
+	// if the player is NOT holding the trap, see if it collided with an enemy
+	if (!m_player.HasTrap())
+	{
+		// get trap currently in level
+		Trap* trap = m_pLevel->GetTrap();
+
+		// if trap was found in the level
+		if (trap) HandleCollisionForTrap(trap->GetXPosition(), trap->GetYPosition());
+	}
+}
+
+void GameplayState::CheckBeatLevel()
+{
+	// TODO: Create a function that handles this
+	if (m_didBeatLevel)
 	{
 		++m_skipFrameCount;
 		if (m_skipFrameCount > kFramesToSkip)
 		{
-			m_beatLevel = false;
+			m_didBeatLevel = false;
 			m_skipFrameCount = 0;
 			++m_currentLevel;
 			if (m_currentLevel == m_LevelNames.size())
@@ -144,7 +146,7 @@ bool GameplayState::Update(bool processInput)
 				Utility::WriteHighScore(m_player.GetMoney());
 
 				AudioManager::GetInstance()->PlayWinSound();
-				
+
 				m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Win);
 			}
 			else
@@ -152,9 +154,15 @@ bool GameplayState::Update(bool processInput)
 				// On to the next level
 				Load();
 			}
-
 		}
 	}
+}
+
+bool GameplayState::Update(bool processInput)
+{
+	if (processInput && !m_didBeatLevel) ProcessInput();
+
+	CheckBeatLevel();
 
 	return false;
 }
@@ -162,6 +170,7 @@ bool GameplayState::Update(bool processInput)
 /*
 	Updates all actors in the level and checks for collisions between the player and them.
 */
+// TODO: Refactor 
 void GameplayState::HandleCollisionForPlayer(int x, int y)
 {
 	m_pLevel->UpdateActors(x, y);
@@ -260,7 +269,7 @@ void GameplayState::HandleCollisionForPlayer(int x, int y)
 					assert(collidedGoal);
 					collidedGoal->Remove();
 					m_player.SetPosition(x, y);
-					m_beatLevel = true;
+					m_didBeatLevel = true;
 					break;
 				}
 				default:

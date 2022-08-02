@@ -21,6 +21,7 @@ void Game::RunGameLoop()
 
 	while (!isGameOver)
 	{
+		// TODO: Update to not call Update twice
 		// update with no input
 		Update(false);
 		// Draw
