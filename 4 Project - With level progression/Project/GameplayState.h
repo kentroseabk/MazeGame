@@ -41,4 +41,11 @@ private:
 	void HandleCollisionForTrap(int trapX, int trapY);
 	bool Load();
 	void DrawHUD(const HANDLE& console);
+
+	void HandleEnemyCollision(PlacableActor* collidedActor, int x, int y);
+	void HandleMoneyCollision(PlacableActor* collidedActor, int x, int y);
+	void HandleKeyCollision(PlacableActor* collidedActor, int x, int y);
+	void HandleTrapCollision(PlacableActor* collidedActor, int x, int y);
+	void HandleDoorCollision(PlacableActor* collidedActor, int x, int y);
+	void HandleGoalCollision(PlacableActor* collidedActor, int x, int y);
 };
