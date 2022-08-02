@@ -48,4 +48,6 @@ private:
 	void HandleTrapCollision(PlacableActor* collidedActor, int x, int y);
 	void HandleDoorCollision(PlacableActor* collidedActor, int x, int y);
 	void HandleGoalCollision(PlacableActor* collidedActor, int x, int y);
+
+	void LookAtCollision(PlacableActor* collidedActor, int x, int y);
 };

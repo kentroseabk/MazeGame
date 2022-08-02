@@ -254,6 +254,50 @@ void GameplayState::HandleGoalCollision(PlacableActor* collidedActor, int x, int
 }
 
 /*
+	I wanted to break up the collision logic into a virtual function on the PlacableActor class
+	that each sub-class would implement but it gets a little more complicated with how various
+	PlacableActors affect the game.
+*/
+void GameplayState::LookAtCollision(PlacableActor* collidedActor, int x, int y)
+{
+	switch (collidedActor->GetType())
+	{
+	case ActorType::Enemy:
+	{
+		HandleEnemyCollision(collidedActor, x, y);
+		break;
+	}
+	case ActorType::Money:
+	{
+		HandleMoneyCollision(collidedActor, x, y);
+		break;
+	}
+	case ActorType::Key:
+	{
+		HandleKeyCollision(collidedActor, x, y);
+		break;
+	}
+	case ActorType::Trap:
+	{
+		HandleTrapCollision(collidedActor, x, y);
+		break;
+	}
+	case ActorType::Door:
+	{
+		HandleDoorCollision(collidedActor, x, y);
+		break;
+	}
+	case ActorType::Goal:
+	{
+		HandleGoalCollision(collidedActor, x, y);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+/*
 	Updates all actors in the level and checks for collisions between the player and them.
 */
 // TODO: Refactor 
@@ -269,51 +313,13 @@ void GameplayState::HandleCollisionForPlayer(int x, int y)
 		{
 			if (collidedActor != nullptr && collidedActor->IsActive())
 			{
-				switch (collidedActor->GetType())
-				{
-				case ActorType::Enemy:
-				{
-					HandleEnemyCollision(collidedActor, x, y);
-					break;
-				}
-				case ActorType::Money:
-				{
-					HandleMoneyCollision(collidedActor, x, y);
-					break;
-				}
-				case ActorType::Key:
-				{
-					HandleKeyCollision(collidedActor, x, y);
-					break;
-				}
-				case ActorType::Trap:
-				{
-					HandleTrapCollision(collidedActor, x, y);
-					break;
-				}
-				case ActorType::Door:
-				{
-					HandleDoorCollision(collidedActor, x, y);
-					break;
-				}
-				case ActorType::Goal:
-				{
-					HandleGoalCollision(collidedActor, x, y);
-					break;
-				}
-				default:
-					break;
-				}
+				LookAtCollision(collidedActor, x, y);
 			}
 		}
 	}
 	else if (m_pLevel->IsSpace(x, y)) // no collision
 	{
 		m_player.SetPosition(x, y);
-	}
-	else if (m_pLevel->IsWall(x, y))
-	{
-		// wall collision, do nothing
 	}
 }
 
