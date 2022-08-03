@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <chrono>
 
 Game::Game()
 	: m_pStateMachine(nullptr)
@@ -17,17 +18,11 @@ void Game::Initialize(GameStateMachine* pStateMachine)
 
 void Game::RunGameLoop()
 {
-	bool isGameOver = false;
-
-	while (!isGameOver)
+	while (!m_pStateMachine->m_gameOver)
 	{
-		// TODO: Update to not call Update twice
-		// update with no input
-		Update(false);
-		// Draw
+		Update();
 		Draw();
-		// Update with input
-		isGameOver = Update();
+		ProcessInput();
 	}
 
 	Draw();
@@ -39,12 +34,29 @@ void Game::Deinitialize()
 		m_pStateMachine->Cleanup();
 }
 
-bool Game::Update(bool processInput)
+void Game::Update()
 {
-	return m_pStateMachine->UpdateCurrentState(processInput);
+	m_pStateMachine->UpdateCurrentState();
 }
 
 void Game::Draw()
 {
-	m_pStateMachine->DrawCurrentState();
+	uint32_t now = GetTime();
+
+	if (now > m_timeOfLastFrame + m_FRAME_TIME_MS)
+	{
+		m_pStateMachine->DrawCurrentState();
+		m_timeOfLastFrame = now;
+	}
+}
+
+void Game::ProcessInput()
+{
+	m_pStateMachine->ProcessInput();
+}
+
+uint32_t Game::GetTime()
+{
+	using namespace std::chrono;
+	return static_cast<uint32_t>(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
 }

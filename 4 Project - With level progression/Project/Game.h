@@ -13,6 +13,12 @@ public:
 	void Deinitialize();
 
 private:
-	bool Update(bool processInput = true);
+	void Update();
+	void ProcessInput();
 	void Draw();
+	uint32_t GetTime();
+
+	const float m_FPS = 250;
+	const float m_FRAME_TIME_MS = 1000 / m_FPS;
+	uint32_t m_timeOfLastFrame = 0;
 };

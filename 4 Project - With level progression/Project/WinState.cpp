@@ -13,14 +13,10 @@ WinState::WinState(StateMachineExampleGame* pOwner)
 {
 }
 
-bool WinState::Update(bool processInput)
+void WinState::ProcessInput()
 {
-	if (processInput)
-	{
-		int input = _getch();
-		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
-	}
-	return false;
+	int input = _getch();
+	m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
 }
 
 void WinState::Draw()

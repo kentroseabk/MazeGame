@@ -28,8 +28,9 @@ public:
 	StateMachineExampleGame(Game* pOwner);
 
 	virtual bool Init() override;
-	virtual bool UpdateCurrentState(bool processInput = true) override;
+	virtual void UpdateCurrentState() override;
 	virtual void DrawCurrentState() override;
+	virtual void ProcessInput() override;
 	virtual void ChangeState(GameState* pNewState) override;
 	void LoadScene(SceneName scene);
 	virtual bool Cleanup() override;

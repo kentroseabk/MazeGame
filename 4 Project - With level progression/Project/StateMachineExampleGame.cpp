@@ -20,9 +20,8 @@ bool StateMachineExampleGame::Init()
 	return true;
 }
 
-bool StateMachineExampleGame::UpdateCurrentState(bool processInput)
+void StateMachineExampleGame::UpdateCurrentState()
 {
-	bool done = false;
 	if (m_pNextState != nullptr)
 	{
 		ChangeState(m_pNextState);
@@ -31,9 +30,16 @@ bool StateMachineExampleGame::UpdateCurrentState(bool processInput)
 
 	if (m_pCurrentState != nullptr)
 	{
-		done = m_pCurrentState->Update(processInput);
+		m_pCurrentState->Update();
 	}
-	return done;
+}
+
+void StateMachineExampleGame::ProcessInput()
+{
+	if (m_pCurrentState != nullptr)
+	{
+		m_pCurrentState->ProcessInput();
+	}
 }
 
 void StateMachineExampleGame::DrawCurrentState()

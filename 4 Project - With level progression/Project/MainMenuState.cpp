@@ -19,19 +19,13 @@ MainMenuState::MainMenuState(StateMachineExampleGame* pOwner)
 {
 }
 
-bool MainMenuState::Update(bool processInput)
-{
-	if (processInput) ProcessInput();
-
-	return m_shouldQuit;
-}
-
 void MainMenuState::ProcessInput()
 {
 	int input = _getch();
 	if (input == kEscapeKey || (char)input == kQuit)
 	{
 		m_shouldQuit = true;
+		m_pOwner->m_gameOver = true;
 	}
 	else if ((char)input == kPlay)
 	{

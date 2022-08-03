@@ -157,13 +157,9 @@ void GameplayState::CheckBeatLevel()
 	}
 }
 
-bool GameplayState::Update(bool processInput)
+void GameplayState::Update()
 {
-	if (processInput && !m_didBeatLevel) ProcessInput();
-
 	CheckBeatLevel();
-
-	return false;
 }
 
 void GameplayState::HandleEnemyCollision(PlacableActor* collidedActor, int x, int y)

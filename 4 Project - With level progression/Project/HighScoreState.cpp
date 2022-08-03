@@ -15,13 +15,6 @@ HighScoreState::HighScoreState(StateMachineExampleGame* pOwner)
 	m_HighScores = Utility::WriteHighScore(0);
 }
 
-bool HighScoreState::Update(bool processInput)
-{
-	if (processInput) ProcessInput();
-
-	return false;
-}
-
 void HighScoreState::ProcessInput()
 {
 	int input = _getch();

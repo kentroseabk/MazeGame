@@ -17,13 +17,6 @@ SettingsState::SettingsState(StateMachineExampleGame* pOwner)
 {
 }
 
-bool SettingsState::Update(bool processInput)
-{
-	if (processInput) ProcessInput();
-
-	return false;
-}
-
 void SettingsState::ProcessInput()
 {
 	int input = _getch();

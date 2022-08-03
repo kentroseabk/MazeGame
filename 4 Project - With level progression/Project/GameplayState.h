@@ -29,7 +29,7 @@ public:
 	~GameplayState();
 
 	virtual void Enter() override;
-	virtual bool Update(bool processInput = true) override;
+	virtual void Update() override;
 	virtual void Draw() override;
 
 protected:
