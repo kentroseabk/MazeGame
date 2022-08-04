@@ -223,7 +223,7 @@ int Level::GetIndexFromCoordinates(int x, int y)
 /*
 	Update all actors in the level.
 */
-void Level::UpdateActors(int x, int y)
+void Level::UpdateActors()
 {
 	for (auto actor = m_pActors.begin(); actor != m_pActors.end(); ++actor)
 	{

@@ -159,6 +159,7 @@ void GameplayState::CheckBeatLevel()
 
 void GameplayState::Update()
 {
+	m_pLevel->UpdateActors();
 	CheckBeatLevel();
 }
 
@@ -299,8 +300,6 @@ void GameplayState::LookAtCollision(PlacableActor* collidedActor, int x, int y)
 // TODO: Refactor 
 void GameplayState::HandleCollisionForPlayer(int x, int y)
 {
-	m_pLevel->UpdateActors(x, y);
-
 	vector<PlacableActor*> collidedActors = m_pLevel->CheckForCollisions(x, y);
 
 	if (collidedActors.size() > 0)
