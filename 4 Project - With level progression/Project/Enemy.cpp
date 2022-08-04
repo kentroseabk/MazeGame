@@ -1,8 +1,9 @@
 #include "Enemy.h"
 #include <iostream>
+#include <windows.h>
 
-Enemy::Enemy(int x, int y, int deltaX, int deltaY)
-	: PlacableActor(x, y)
+Enemy::Enemy(int x, int y, char drawSymbol, int deltaX, int deltaY)
+	: PlacableActor(x, y, drawSymbol)
 	, m_currentMovementX(0)
 	, m_currentMovementY(0)
 	, m_directionX(0)
@@ -25,10 +26,16 @@ void Enemy::InitDirection()
 	}
 }
 
-void Enemy::Draw()
-{
-	std::cout << (char)153;
-}
+//void Enemy::Draw()
+//{
+//	if (!HasMoved()) return;
+//
+//	ClearPreviousPositionDraw();
+//
+//	PrepareDraw();
+//
+//	std::cout << (char)153;
+//}
 
 void Enemy::Update()
 {

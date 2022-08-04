@@ -28,7 +28,7 @@ public:
 	void DecrementLives() { m_lives--; }
 
 	virtual ActorType GetType() override { return ActorType::Player; }
-	virtual void Draw() override;
+	//virtual void Draw() override;
 
 	void Reset();
 

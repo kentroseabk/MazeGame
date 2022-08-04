@@ -2,8 +2,8 @@
 #include <windows.h>
 #include "Door.h"
 
-Door::Door(int x, int y, ActorColor color, ActorColor closedColor)
-	: PlacableActor(x, y, color)
+Door::Door(int x, int y, char drawSymbol, ActorColor color, ActorColor closedColor)
+	: PlacableActor(x, y, m_drawSymbol, color)
 	, m_isOpen(false)
 	, m_closedColor(closedColor)
 {
@@ -12,6 +12,10 @@ Door::Door(int x, int y, ActorColor color, ActorColor closedColor)
 
 void Door::Draw()
 {
+	ClearPreviousPositionDraw();
+
+	PrepareDraw();
+
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 	if (m_isOpen)
 	{
@@ -21,6 +25,7 @@ void Door::Draw()
 	{
 		SetConsoleTextAttribute(console, (int)m_closedColor);
 	}
-	std::cout << "|";
+
+	std::cout << m_drawSymbol;
 	SetConsoleTextAttribute(console, (int)ActorColor::Regular);
 }

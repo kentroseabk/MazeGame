@@ -1,14 +1,14 @@
 #include <iostream>
 #include "Money.h"
 
-Money::Money(int x, int y, int worth)
-	: PlacableActor(x, y)
+Money::Money(int x, int y, int worth, char drawSymbol)
+	: PlacableActor(x, y, drawSymbol)
 	, m_worth(worth)
 {
 
 }
 
-void Money::Draw()
-{
-	std::cout << "$";
-}
+//void Money::Draw()
+//{
+//	std::cout << "$";
+//}

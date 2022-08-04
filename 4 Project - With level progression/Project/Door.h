@@ -4,7 +4,7 @@
 class Door : public PlacableActor
 {
 public:
-	Door(int x, int y, ActorColor color, ActorColor closedColor);
+	Door(int x, int y, char drawSymbol, ActorColor color, ActorColor closedColor);
 	virtual void Draw() override;
 
 	virtual ActorType GetType() override { return ActorType::Door;  }

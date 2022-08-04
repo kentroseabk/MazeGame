@@ -10,7 +10,7 @@ using namespace std;
 constexpr int kStartingNumberOfLives = 3;
 
 Player::Player()
-	: PlacableActor(0, 0)
+	: PlacableActor(0, 0, '@')
 	, m_pCurrentKey(nullptr)
 	, m_pTrap(nullptr)
 	, m_money(0)
@@ -73,10 +73,16 @@ void Player::PickUpTrap(Trap* trap)
 	m_pTrap = trap;
 }
 
-void Player::Draw()
-{
-	cout << "@";
-}
+//void Player::Draw()
+//{
+//	if (!HasMoved()) return;
+//
+//	ClearPreviousPositionDraw();
+//
+//	PrepareDraw();
+//
+//	cout << "@";
+//}
 
 void Player::Reset()
 {

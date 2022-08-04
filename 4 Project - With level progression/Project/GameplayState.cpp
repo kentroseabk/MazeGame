@@ -350,15 +350,22 @@ void GameplayState::HandleCollisionForTrap(int x, int y)
 void GameplayState::Draw()
 {
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
-	system("cls");
+	//system("cls");
 
-	m_pLevel->Draw();
+	if (!m_bDrawn)
+	{
+		system("cls");
+		m_pLevel->Draw();
+		m_bDrawn = true;
+	}
+
+	m_pLevel->DrawActors();
 
 	// Set cursor position for player 
-	COORD actorCursorPosition;
-	actorCursorPosition.X = m_player.GetXPosition();
-	actorCursorPosition.Y = m_player.GetYPosition();
-	SetConsoleCursorPosition(console, actorCursorPosition);
+	//COORD actorCursorPosition;
+	//actorCursorPosition.X = m_player.GetXPosition();
+	//actorCursorPosition.Y = m_player.GetYPosition();
+	//SetConsoleCursorPosition(console, actorCursorPosition);
 	m_player.Draw();
 
 	// Set the cursor to the end of the level

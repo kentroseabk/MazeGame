@@ -20,6 +20,7 @@ public:
 
 	bool Load(std::string levelName, int* playerX, int* playerY);
 	void Draw();
+	void DrawActors();
 	void UpdateActors();
 	std::vector<PlacableActor*> CheckForCollisions(int x, int y);
 

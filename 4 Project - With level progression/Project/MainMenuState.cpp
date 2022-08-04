@@ -43,11 +43,16 @@ void MainMenuState::ProcessInput()
 
 void MainMenuState::Draw()
 {
-	system("cls");
-	cout << endl << endl << endl;
-	cout << "          - - - MAIN MENU - - -" << endl << endl;
-	cout << "             " << kPlay << ". Play " << endl;
-	cout << "             " << kHighScore << ". High Score " << endl;
-	cout << "             " << kSettings << ". Settings " << endl;
-	cout << "             " << kQuit << ". Quit " << endl;
+	if (!m_bDrawn)
+	{
+		system("cls");
+		cout << endl << endl << endl;
+		cout << "          - - - MAIN MENU - - -" << endl << endl;
+		cout << "             " << kPlay << ". Play " << endl;
+		cout << "             " << kHighScore << ". High Score " << endl;
+		cout << "             " << kSettings << ". Settings " << endl;
+		cout << "             " << kQuit << ". Quit " << endl;
+
+		m_bDrawn = true;
+	}
 }

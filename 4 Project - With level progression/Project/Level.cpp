@@ -89,6 +89,12 @@ void Level::Draw()
 		}
 		cout << endl;
 	}
+}
+
+void Level::DrawActors()
+{
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(console, (int)ActorColor::Regular);
 
 	COORD actorCursorPosition;
 
@@ -131,39 +137,39 @@ bool Level::ConvertLevel(int* playerX, int* playerY)
 				break;
 			case 'r':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Key(x, y, ActorColor::Red));
+				m_pActors.push_back(new Key(x, y, '+', ActorColor::Red));
 				break;
 			case 'g':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Key(x, y, ActorColor::Green));
+				m_pActors.push_back(new Key(x, y, '+', ActorColor::Green));
 				break;
 			case 'b':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Key(x, y, ActorColor::Blue));
+				m_pActors.push_back(new Key(x, y, '+', ActorColor::Blue));
 				break;
 			case '#':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Trap(x, y, ActorColor::Yellow));
+				m_pActors.push_back(new Trap(x, y, '#', ActorColor::Yellow));
 				break;
 			case 'R':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Door(x, y, ActorColor::Red, ActorColor::SolidRed));
+				m_pActors.push_back(new Door(x, y, '#', ActorColor::Red, ActorColor::SolidRed));
 				break;
 			case 'G':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Door(x, y, ActorColor::Green, ActorColor::SolidGreen));
+				m_pActors.push_back(new Door(x, y, '|', ActorColor::Green, ActorColor::SolidGreen));
 				break;
 			case 'B':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Door(x, y, ActorColor::Blue, ActorColor::SolidBlue));
+				m_pActors.push_back(new Door(x, y, '|', ActorColor::Blue, ActorColor::SolidBlue));
 				break;
 			case 'X':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Goal(x, y));
+				m_pActors.push_back(new Goal(x, y, 'X'));
 				break;
 			case '$':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Money(x, y, 1 + rand() % 5));
+				m_pActors.push_back(new Money(x, y, 1 + rand() % 5, '$'));
 				break;
 			case '@':
 				m_pLevelData[index] = ' ';
@@ -174,16 +180,16 @@ bool Level::ConvertLevel(int* playerX, int* playerY)
 				}
 				break;
 			case 'e':
-				m_pActors.push_back(new Enemy(x, y));
+				m_pActors.push_back(new Enemy(x, y, (char)153));
 				m_pLevelData[index] = ' '; // clear the level
 				break;
 			case 'h':
-				m_pActors.push_back(new Enemy(x, y, 3, 0));
+				m_pActors.push_back(new Enemy(x, y, (char)153, 3, 0));
 				m_pLevelData[index] = ' '; // clear the level
 				break;
 			case 'v':
 				m_pLevelData[index] = ' ';
-				m_pActors.push_back(new Enemy(x, y, 0, 2));
+				m_pActors.push_back(new Enemy(x, y, (char)153, 0, 2));
 				m_pLevelData[index] = ' '; // clear the level
 				break;
 				break;
