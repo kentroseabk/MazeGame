@@ -38,7 +38,9 @@ protected:
 
 private:
 	void HandleCollisionForPlayer(int newPlayerX, int newPlayerY);
+	void HandleCollisionForEnemies(int x, int y);
 	void HandleCollisionForTrap(int trapX, int trapY);
+	void HandleTrap();
 	bool Load();
 	void DrawHUD(const HANDLE& console);
 

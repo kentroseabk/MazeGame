@@ -66,9 +66,12 @@ void GameplayState::Enter()
 void GameplayState::ProcessInput()
 {
 	int input = _getch();
+
 	int arrowInput = 0;
 	int newPlayerX = m_player.GetXPosition();
 	int newPlayerY = m_player.GetYPosition();
+
+	bool droppingItem = false;
 
 	// One of the arrow keys were pressed
 	if (input == kArrowInput)
@@ -102,31 +105,19 @@ void GameplayState::ProcessInput()
 	}
 	else if ((char)input == 'Z' || (char)input == 'z')
 	{
+		droppingItem = true;
 		m_player.DropKey();
 	}
 	else if ((char)input == 'T' || (char)input == 't')
 	{
+		droppingItem = true;
 		m_player.DropTrap();
 	}
 
-	// If position never changed
-	if (newPlayerX == m_player.GetXPosition() && newPlayerY == m_player.GetYPosition())
-	{
-		//return false;
-	}
-	else
+	// if we dropped the key, trap, etc, we DON'T want to pick it up right away
+	if (!droppingItem)
 	{
 		HandleCollisionForPlayer(newPlayerX, newPlayerY);
-	}
-
-	// if the player is NOT holding the trap, see if it collided with an enemy
-	if (!m_player.HasTrap())
-	{
-		// get trap currently in level
-		Trap* trap = m_pLevel->GetTrap();
-
-		// if trap was found in the level
-		if (trap) HandleCollisionForTrap(trap->GetXPosition(), trap->GetYPosition());
 	}
 }
 
@@ -160,7 +151,24 @@ void GameplayState::CheckBeatLevel()
 void GameplayState::Update()
 {
 	m_pLevel->UpdateActors();
+
+	HandleTrap();
+	HandleCollisionForEnemies(m_player.GetXPosition(), m_player.GetYPosition());
+
 	CheckBeatLevel();
+}
+
+void GameplayState::HandleTrap()
+{
+	// if the player is NOT holding the trap, see if it collided with an enemy
+	if (!m_player.HasTrap())
+	{
+		// get trap currently in level
+		Trap* trap = m_pLevel->GetTrap();
+
+		// if trap was found in the level
+		if (trap) HandleCollisionForTrap(trap->GetXPosition(), trap->GetYPosition());
+	}
 }
 
 void GameplayState::HandleEnemyCollision(PlacableActor* collidedActor, int x, int y)
@@ -295,9 +303,8 @@ void GameplayState::LookAtCollision(PlacableActor* collidedActor, int x, int y)
 }
 
 /*
-	Updates all actors in the level and checks for collisions between the player and them.
+	Checks for collisions between the player and all actors.
 */
-// TODO: Refactor 
 void GameplayState::HandleCollisionForPlayer(int x, int y)
 {
 	vector<PlacableActor*> collidedActors = m_pLevel->CheckForCollisions(x, y);
@@ -315,6 +322,29 @@ void GameplayState::HandleCollisionForPlayer(int x, int y)
 	else if (m_pLevel->IsSpace(x, y)) // no collision
 	{
 		m_player.SetPosition(x, y);
+	}
+}
+
+/*
+	Since the other HandleCollision method not only determines if the player can move,
+	but also what (if anything) they collided with, I needed a method that would check
+	if enemies are colliding with the player while they aren't moving.
+*/
+void GameplayState::HandleCollisionForEnemies(int x, int y)
+{
+	vector<PlacableActor*> collidedActors = m_pLevel->CheckForCollisions(x, y);
+
+	if (collidedActors.size() > 0)
+	{
+		for (auto& collidedActor : collidedActors)
+		{
+			if (collidedActor != nullptr && 
+				collidedActor->IsActive() && 
+				collidedActor->GetType() == ActorType::Enemy)
+			{
+				HandleEnemyCollision(collidedActor, x, y);
+			}
+		}
 	}
 }
 
