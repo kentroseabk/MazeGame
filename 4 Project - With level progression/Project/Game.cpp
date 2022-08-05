@@ -77,8 +77,6 @@ void Game::Draw()
 
 void Game::ProcessInput()
 {
-	// clear input so stored input from between 
-	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 	m_pStateMachine->ProcessInput();
 }
 

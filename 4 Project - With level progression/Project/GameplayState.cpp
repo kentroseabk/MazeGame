@@ -65,60 +65,69 @@ void GameplayState::Enter()
 
 void GameplayState::ProcessInput()
 {
-	int input = _getch();
+	int input = -1;
 
-	int arrowInput = 0;
-	int newPlayerX = m_player.GetXPosition();
-	int newPlayerY = m_player.GetYPosition();
+	if (_kbhit())
+	{
+		input = _getch();
 
-	bool droppingItem = false;
+		int arrowInput = 0;
+		int newPlayerX = m_player.GetXPosition();
+		int newPlayerY = m_player.GetYPosition();
 
-	// One of the arrow keys were pressed
-	if (input == kArrowInput)
-	{
-		arrowInput = _getch();
+		bool droppingItem = false;
+
+		// One of the arrow keys were pressed
+		if (input == kArrowInput)
+		{
+			arrowInput = _getch();
+		}
+
+		if ((input == kArrowInput && arrowInput == kLeftArrow) ||
+			(char)input == 'A' || (char)input == 'a')
+		{
+			newPlayerX--;
+		}
+		else if ((input == kArrowInput && arrowInput == kRightArrow) ||
+			(char)input == 'D' || (char)input == 'd')
+		{
+			newPlayerX++;
+		}
+		else if ((input == kArrowInput && arrowInput == kUpArrow) ||
+			(char)input == 'W' || (char)input == 'w')
+		{
+			newPlayerY--;
+		}
+		else if ((input == kArrowInput && arrowInput == kDownArrow) ||
+			(char)input == 'S' || (char)input == 's')
+		{
+			newPlayerY++;
+		}
+		else if (input == kEscapeKey)
+		{
+			m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
+		}
+		else if ((char)input == 'Z' || (char)input == 'z')
+		{
+			droppingItem = true;
+			m_player.DropKey();
+		}
+		else if ((char)input == 'T' || (char)input == 't')
+		{
+			droppingItem = true;
+			m_player.DropTrap();
+		}
+
+		// if we dropped the key, trap, etc, we DON'T want to pick it up right away
+		if (!droppingItem)
+		{
+			HandleCollisionForPlayer(newPlayerX, newPlayerY);
+		}
+
+		input = -1;
 	}
 
-	if ((input == kArrowInput && arrowInput == kLeftArrow) ||
-		(char)input == 'A' || (char)input == 'a')
-	{
-		newPlayerX--;
-	}
-	else if ((input == kArrowInput && arrowInput == kRightArrow) ||
-		(char)input == 'D' || (char)input == 'd')
-	{
-		newPlayerX++;
-	}
-	else if ((input == kArrowInput && arrowInput == kUpArrow) ||
-		(char)input == 'W' || (char)input == 'w')
-	{
-		newPlayerY--;
-	}
-	else if ((input == kArrowInput && arrowInput == kDownArrow) ||
-		(char)input == 'S' || (char)input == 's')
-	{
-		newPlayerY++;
-	}
-	else if (input == kEscapeKey)
-	{
-		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
-	}
-	else if ((char)input == 'Z' || (char)input == 'z')
-	{
-		droppingItem = true;
-		m_player.DropKey();
-	}
-	else if ((char)input == 'T' || (char)input == 't')
-	{
-		droppingItem = true;
-		m_player.DropTrap();
-	}
 
-	// if we dropped the key, trap, etc, we DON'T want to pick it up right away
-	if (!droppingItem)
-	{
-		HandleCollisionForPlayer(newPlayerX, newPlayerY);
-	}
 }
 
 void GameplayState::CheckBeatLevel()

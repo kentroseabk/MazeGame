@@ -21,23 +21,29 @@ MainMenuState::MainMenuState(StateMachineExampleGame* pOwner)
 
 void MainMenuState::ProcessInput()
 {
-	int input = _getch();
-	if (input == kEscapeKey || (char)input == kQuit)
+	int input = -1;
+
+	if (_kbhit())
 	{
-		m_shouldQuit = true;
-		m_pOwner->m_gameOver = true;
-	}
-	else if ((char)input == kPlay)
-	{
-		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Gameplay);
-	}
-	else if ((char)input == kHighScore)
-	{
-		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::HighScore);
-	}
-	else if ((char)input == kSettings)
-	{
-		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Settings);
+		input = _getch();
+
+		if (input == kEscapeKey || (char)input == kQuit)
+		{
+			m_shouldQuit = true;
+			m_pOwner->m_gameOver = true;
+		}
+		else if ((char)input == kPlay)
+		{
+			m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Gameplay);
+		}
+		else if ((char)input == kHighScore)
+		{
+			m_pOwner->LoadScene(StateMachineExampleGame::SceneName::HighScore);
+		}
+		else if ((char)input == kSettings)
+		{
+			m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Settings);
+		}
 	}
 }
 

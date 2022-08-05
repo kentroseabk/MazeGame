@@ -15,8 +15,14 @@ WinState::WinState(StateMachineExampleGame* pOwner)
 
 void WinState::ProcessInput()
 {
-	int input = _getch();
-	m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
+	int input = -1;
+
+	if (_kbhit())
+	{
+		input = _getch();
+		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
+	}
+
 }
 
 void WinState::Draw()

@@ -19,17 +19,23 @@ SettingsState::SettingsState(StateMachineExampleGame* pOwner)
 
 void SettingsState::ProcessInput()
 {
-	int input = _getch();
-	if (input == kEscapeKey || (char)input == kMainMenu)
+	int input = -1;
+
+	if (_kbhit())
 	{
-		m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
-	}
-	else if ((char)input == kSound)
-	{
-		AudioManager::GetInstance()->ToggleSound();
-		if (AudioManager::GetInstance()->IsSoundOn())
+		input = _getch();
+
+		if (input == kEscapeKey || (char)input == kMainMenu)
 		{
-			AudioManager::GetInstance()->PlayMoneySound();
+			m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
+		}
+		else if ((char)input == kSound)
+		{
+			AudioManager::GetInstance()->ToggleSound();
+			if (AudioManager::GetInstance()->IsSoundOn())
+			{
+				AudioManager::GetInstance()->PlayMoneySound();
+			}
 		}
 	}
 }
